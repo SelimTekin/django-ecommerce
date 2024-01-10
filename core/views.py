@@ -348,7 +348,28 @@ class PaymentView(View):
 class HomeView(ListView):
     model = Item
     paginate_by = 10
+    context_object_name = "items"
     template_name = "home.html"
+
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # GET ile gelen search parametresini al
+        search_query = self.request.GET.get('search', '')
+
+        # Get ile gelen search parametresi varsa, queryset'i filtrele
+        if search_query:
+            queryset = queryset.filter(title__icontains=search_query)  # title alanında arama
+
+        order_by = self.request.GET.get('order_by', '')
+        if order_by in ['price_asc', 'price_desc']:
+            if order_by == 'price_asc':
+                queryset = queryset.order_by('price')
+            elif order_by == 'price_desc':
+                queryset = queryset.order_by('-price')
+
+        return queryset
 
 
 class OrderSummaryView(LoginRequiredMixin, View):
