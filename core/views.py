@@ -351,10 +351,9 @@ class HomeView(ListView):
     context_object_name = "items"
     template_name = "home.html"
 
-    
     def get_queryset(self):
         queryset = super().get_queryset()
-        
+
         # GET ile gelen search parametresini al
         search_query = self.request.GET.get('search', '')
 
@@ -369,8 +368,11 @@ class HomeView(ListView):
             elif order_by == 'price_desc':
                 queryset = queryset.order_by('-price')
 
-        return queryset
+        # Mevcut sıralamayı koruyarak rastgele sırala
+        all_items = list(queryset)
+        random.shuffle(all_items)
 
+        return all_items
 
 class OrderSummaryView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
